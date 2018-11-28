@@ -1,0 +1,9 @@
+# variables
+phplive=/usr/local/php5.6/bin/php
+phplocal=/Applications/MAMP/bin/php/php7.1.20/bin
+wpclilive=/homez.xxx/xxxxxxxxxx/_scripts/wp-cli.phar
+path=~/www/websites/mysite/
+ssh=xxxxxxxxxx@ssh.clusterxxx.ovh.net
+livedomain=http://www.mydomain.com
+localdomain=http://localhost/mysite
+localdev=localhost:8000
