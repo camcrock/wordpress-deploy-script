@@ -27,18 +27,22 @@ deploy: ## Deploy files to the server (exclude uploads)
 		--exclude wp-content/uploads
 
 dbdeploy: ## Send the database and replace the URLs
-	wp db export --add-drop-table dump.sql
-	rsync -av ./dump.sql $(ssh):$(path)
-	ssh $(ssh) "cd $(path); $(phplive) $(wpclilive) db import dump.sql; $(phplive) $(wpclilive) search-replace '$(localdomain)' '$(livedomain)'; rm dump.sql"
-	rm dump.sql
+	wp db export --add-drop-table localdump.sql
+	rsync -av ./localdump.sql $(ssh):$(path)
+	ssh $(ssh) "cd $(path); $(phplive) $(wpclilive) db export --add-drop-table livedump.sql; gzip -c livedump.sql > ../_dbbackups/live-$(shell date +%Y%m%d-%H%M%S).sql.gz; rm livedump.sql"
+	ssh $(ssh) "cd $(path); $(phplive) $(wpclilive) db import localdump.sql; $(phplive) $(wpclilive) search-replace '$(localdomain)' '$(livedomain)'; rm localdump.sql"
+	rm localdump.sql
 
 dbimport: ## Get the database from the server and replace the URLs
-	ssh $(ssh) "cd $(path); $(phplive) $(wpclilive) db export --add-drop-table dump.sql"
-	rsync -av $(ssh):$(path)dump.sql ./
-	ssh $(ssh) "rm $(path)dump.sql"
-	wp db import dump.sql
+	ssh $(ssh) "cd $(path); $(phplive) $(wpclilive) db export --add-drop-table livedump.sql; gzip -c livedump.sql > ../_dbbackups/live-$(shell date +%Y%m%d-%H%M%S).sql.gz"
+	rsync -av $(ssh):$(path)livedump.sql ./
+	ssh $(ssh) "rm $(path)livedump.sql"
+	wp db export --add-drop-table localdump.sql
+	gzip -c localdump.sql > ../_dbbackups/local-$(shell date +%Y%m%d-%H%M%S).sql.gz
+	rm localdump.sql
+	wp db import livedump.sql
 	wp search-replace '$(livedomain)' '$(localdomain)'
-	rm dump.sql
+	rm livedump.sql
 
 update: ## Update local wordpress core and plugins
 	wp core update
