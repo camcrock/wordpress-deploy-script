@@ -28,6 +28,7 @@ You have to enable SSH on your hosting, for OVH hosting plan, follow this tutori
     - `localdomain=http://localhost/example` ## local URL
 5. Create a database on your OVH
 6. Copy the local files on your server, and configure the wp-config.php correctly to connect to your database
+7. Create a `../_dbbackups/` folder to store the database backups
 
 ### Add your SSH key to the server to avoid typing your password every time
 
